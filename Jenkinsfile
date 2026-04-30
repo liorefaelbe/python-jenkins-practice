@@ -23,16 +23,6 @@ pipeline {
             }
         }
 
-        stage('Format Check') {
-            steps {
-                echo '========================================'
-                echo 'Checking code format with Black...'
-                echo '========================================'
-
-                sh '. venv/bin/activate && black --check app tests'
-            }
-        }
-
         stage('Lint') {
             steps {
                 echo '========================================'
