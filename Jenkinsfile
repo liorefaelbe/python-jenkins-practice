@@ -4,41 +4,74 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out source code...'
+                echo '========================================'
+                echo 'Checking out source code from Git...'
+                echo '========================================'
                 checkout scm
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                echo '========================================'
+                echo 'Creating virtual environment...'
                 echo 'Installing Python dependencies...'
+                echo '========================================'
+
                 sh 'python3 -m venv venv'
                 sh '. venv/bin/activate && pip install -r requirements.txt'
             }
         }
 
+        stage('Format Check') {
+            steps {
+                echo '========================================'
+                echo 'Checking code format with Black...'
+                echo '========================================'
+
+                sh '. venv/bin/activate && black --check app tests'
+            }
+        }
+
         stage('Lint') {
             steps {
-                echo 'Running flake8...'
-                sh '. venv/bin/activate && flake8 app tests'
+                echo '========================================'
+                echo 'Running flake8 lint checks...'
+                echo '========================================'
+
+                sh '. venv/bin/activate && flake8 app tests --show-source --statistics'
             }
         }
 
         stage('Unit Tests') {
             steps {
-                echo 'Running unit tests...'
-                sh '. venv/bin/activate && PYTHONPATH=. pytest -v'
+                echo '========================================'
+                echo 'Running Python unit tests with pytest...'
+                echo '========================================'
+
+                sh '. venv/bin/activate && PYTHONPATH=. pytest -v --junitxml=test-results.xml'
+            }
+
+            post {
+                always {
+                    junit 'test-results.xml'
+                }
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully.'
+            echo '========================================'
+            echo 'PIPELINE PASSED SUCCESSFULLY'
+            echo '========================================'
         }
 
         failure {
-            echo 'Pipeline failed. Check the logs.'
+            echo '========================================'
+            echo 'PIPELINE FAILED'
+            echo 'Check the failed stage above.'
+            echo '========================================'
         }
     }
 }
