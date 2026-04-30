@@ -2,7 +2,7 @@ import pytest
 
 from app.calculator import add, subtract, multiply, divide, is_even
 
-
+    
 def test_add():
     assert add(2, 3) == 5
 
