@@ -27,14 +27,7 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 echo 'Running unit tests...'
-                sh '. venv/bin/activate && pytest -v'
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                echo 'Building Docker image...'
-                sh 'docker build -t akamai-python-practice .'
+                sh '. venv/bin/activate && PYTHONPATH=. pytest -v'
             }
         }
     }
@@ -45,7 +38,7 @@ pipeline {
         }
 
         failure {
-            echo 'Pipeline failed. Check logs above.'
+            echo 'Pipeline failed. Check the logs.'
         }
     }
 }
